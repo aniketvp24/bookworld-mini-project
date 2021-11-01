@@ -1,3 +1,15 @@
+<?php
+include("dbconfig.php");
+  session_start();
+    require "dbfunctions.php";
+    if(isset($_SESSION['email'])) {
+      $user = getUserIdbyEmail($_SESSION['email']);
+      $name = $user['firstName'];
+    }
+    $row = select4LatestBook($conn);
+    $rw = selectBestSellerBook($conn);
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -26,20 +38,25 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
+            <!-- </li>
           <li class="nav-item">
             <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              My Account
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="login.html">Log in</a></li>
-              <li><a class="dropdown-item" href="signup.php">Sign up</a></li>
-            </ul>
-          </li>
+          </li> -->
+            <?php
+          if(isset($_SESSION['email'])) {
+            $user = getUserIdbyEmail($_SESSION['email']);
+            $name = $user['firstName'];
+            if($name=="admin") {
+              echo "<li class='nav-item dropdown'><a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>$name</a><ul class='dropdown-menu' aria-labelledby='navbarDropdown'><li><a class='dropdown-item' href='admin_dash.php'>Admin Dashboard</a></li><li><a class='dropdown-item' href='logout.php'>Logout</a></li></ul></li>";
+            } else {
+              echo "<li class='nav-item dropdown'><a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>$name</a><ul class='dropdown-menu' aria-labelledby='navbarDropdown'><li><a class='dropdown-item' href='cart.php'>My Cart</a></li><li><a class='dropdown-item' href='logout.php'>Logout</a></li></ul></li>";
+            }
+
+          } else {
+
+            echo "<li class='nav-item dropdown'><a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-bs-toggle='dropdown' aria-expanded='false'>My Account</a><ul class='dropdown-menu' aria-labelledby='navbarDropdown'><li><a class='dropdown-item' href='login.php'>Login</a></li><li><a class='dropdown-item' href='signup.php'>Sign up</a></li></ul></li>";
+          }
+          ?>
         </ul>
         <form class="d-flex">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -74,7 +91,7 @@
           </div>
         </div>
         <div class="carousel-item">
-          <img src="order-online.png" class="d-block w-100" alt="...">
+          <img src="orderonline.png" class="d-block w-100" alt="...">
           <div class="carousel-caption d-md-block">
             <h2>Order online. Hassle free!</h2>
             <p>Your books will be delivered to you at your doorsteps just by few clicks!</p>
@@ -100,24 +117,66 @@
       <div class="col-3 border">
         <h6 class="mt-2">Browse by category</h6>
         <ul>
-          <li>Arts And Entertainments</li>
-          <li>Children</li>
-          <li>Cooking, Food And Drink</li>
-          <li>Fiction</li>
-          <li>Health And Diet</li>
-          <li>Non-Fiction</li>
+          <form method='post' action='bookPerCat.php'>
+            <?php
+            $category_query = "SELECT category_name, categoryid FROM category ORDER By category_name ASC;";
+            $result_cat=mysqli_query($conn, $category_query);
+            while($query_row = mysqli_fetch_assoc($result_cat)){
+              echo "<br><label style='margin-left: -20px'><input type ='radio' name='catid' value='".$query_row['categoryid']."'>&nbsp;&nbsp;&nbsp;&nbsp;".$query_row['category_name']."</label>";
+            }
+          ?>
+            <br><br>
+            <div class="text-center" style="margin-left: -50px;">
+              <button class="btn btn-outline-success" type="submit"
+                value="catid">Search</button>&nbsp;&nbsp;&nbsp;<button class="btn btn-outline-success"
+                onclick="location.href='allbooks.php'" type="button">View All Books</button>
+            </div><br>
+
+          </form>
+          <br>
+
         </ul>
+
       </div>
       <div class="col-9 border">
-        <h6 class="mt-2">Our latest books</h6>
+        <div class="row mt-2 mb-4">
+          <h6 class="mb-4">Our latest books</h6>
+          <?php foreach($row as $book) { ?>
+          <div class="col-md-3">
+            <a href="book.php?bookisbn=<?php echo $book['book_isbn']; ?>">
+              <img class="img-responsive img-thumbnail" src="./images/<?php echo $book['book_image']; ?>">
+            </a>
+          </div>
+          <?php } ?>
+        </div>
+
+        <div class="row mt-2 mb-4">
+          <h6 class="mb-4 mt-2">Bestsellers</h6>
+          <?php foreach($rw as $book) { ?>
+          <div class="col-md-3">
+            <a href="book.php?bookisbn=<?php echo $book['book_isbn']; ?>">
+              <img class="img-responsive img-thumbnail" src="./images/<?php echo $book['book_image']; ?>">
+            </a>
+          </div>
+          <?php } ?>
+        </div>
       </div>
 
     </div>
 
   </div>
 
+  <footer class="page-footer font-small blue">
 
-  </div>
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3 mt-2">© 2020-2021 BooksWorld, Inc.&nbsp;&nbsp;
+      <a href="#">Back to top</a>
+    </div>
+    <!-- Copyright -->
+
+  </footer>
+
+
   <!-- Optional JavaScript; choose one of the two! -->
 
   <!-- Option 1: Bootstrap Bundle with Popper -->

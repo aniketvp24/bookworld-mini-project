@@ -1,13 +1,3 @@
-<?php
-include("dbconfig.php");
-
-
-
-
-
-?>
-
-
 <!doctype html>
 <html lang="en">
 
@@ -35,10 +25,7 @@ include("dbconfig.php");
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="home.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
+                        <a class="nav-link" aria-current="page" href="home.php">Home</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
@@ -46,8 +33,8 @@ include("dbconfig.php");
                             My Account
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="login.html">Log in</a></li>
-                            <li><a class="dropdown-item" href="signup.html">Sign up</a></li>
+                            <li><a class="dropdown-item" href="login.php">Log in</a></li>
+                            <li><a class="dropdown-item" href="signup.php">Sign up</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -58,30 +45,55 @@ include("dbconfig.php");
             </div>
         </div>
     </nav>
+    <?php
+    include("dbconfig.php");
+    if(isset($_POST['signup'])) {
+        $firstname = $_POST['firstName'];
+        $lastname  = $_POST['lastName'];
+        $signupemail = $_POST['signupEmail'];
+        $signuppass = md5($_POST['signupPass']);
+        $address =  $_POST['address'];
+        $city = $_POST['city'];
+        $zip = $_POST['zip'];
+        $phone = $_POST['phone'];
+        $check_email_query="SELECT * FROM `user` WHERE email = '$signupemail'";
+        $run_query = mysqli_query($conn , $check_email_query); 
+        if(mysqli_num_rows($run_query)>0)  
+        {  
+            echo '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Email '.$signupemail.' already exists in database!</strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+        }  else {
+            $insert_user= "INSERT INTO `user`(`firstName`, `lastName`, `email`, `password`, `address`, `city`, `pincode`, `contact`) VALUES ('$firstname','$lastname','$signupemail','$signuppass','$address','$city','$zip','$phone')";
+            if(mysqli_query($conn, $insert_user))  
+        {  
+            echo"<script>window.open('login.php', '_self')</script>";  
+        }
+        }
 
+}
+?>
     <div class="container-fluid signupForm mt-4">
         <h5 style="text-align: center;font-family: 'Source Code Pro', monospace;">Sign up for BooksWorld!</h5>
         <form class="row g-4  mt-2" method="post" action="">
             <div class="col-md-6">
                 <label for="firstName" class="form-label">First Name</label>
-                <input type="text" name="firstName"  class="form-control" id="firstName" required>
+                <input type="text" name="firstName" class="form-control" id="firstName" required>
             </div>
             <div class="col-md-6">
                 <label for="lastName" class="form-label">Last Name</label>
-                <input type="text" name="lastName"  class="form-control" id="lastName" required>
+                <input type="text" name="lastName" class="form-control" id="lastName" required>
             </div>
             <div class="col-md-6">
                 <label for="signupEmail" class="form-label">Email</label>
-                <input type="email" name="email"  class="form-control" id="signupEmail" required>
+                <input type="email" name="signupEmail" class="form-control" id="signupEmail" required>
             </div>
             <div class="col-md-6">
                 <label for="signupPass" class="form-label">Password</label>
-                <input type="password" name="pass"  class="form-control" id="signupPass" required>
+                <input type="password" name="signupPass" class="form-control" id="signupPass" required>
             </div>
             <div class="col-12">
                 <label for="inputAddress" class="form-label">Address</label>
-                <textarea class="form-control" name="address" placeholder="Street address" id="address"
-                    required style="height: 75px; resize: none;"></textarea>
+                <textarea class="form-control" name="address" placeholder="Street address" id="address" required
+                    style="height: 75px; resize: none;"></textarea>
             </div>
             <div class="col-md-5">
                 <label for="inputCity" class="form-label">City</label>
@@ -95,9 +107,9 @@ include("dbconfig.php");
                 <label for="contactNo" class="form-label">Phone</label>
                 <input type="text" name="phone" class="form-control" id="contactNo" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-center">Sign up</button>
+            <button type="submit" class="btn btn-primary btn-center" name="signup">Sign up</button>
             <div class="col-12 btn-center">
-                
+
             </div>
         </form>
     </div>

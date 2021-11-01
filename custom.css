@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@1,900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@300&display=swap');
 .logo-txt {
     color: gold;
     font-family: 'Source Code Pro', monospace;
@@ -36,7 +36,15 @@
     font-family: 'Source Code Pro', monospace;
 }
 
+.footer-copyright {
+    overflow: hidden;
+    color: white;
+    background-color: black;
+}
 
+.footer-copyright a{
+    color: white;
+}
 
 /* login.html css starts here */
 .loginForm {
@@ -80,4 +88,9 @@
     100% {
         background-position: 0% 50%;
     }
+}
+
+/* book.php starts here */
+.bookdesc {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
